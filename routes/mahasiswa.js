@@ -110,5 +110,23 @@ let data = {
     })
   })
 
+  router.delete('/delete/(:id)', function (req, res){
+    let id = req.params.id;
+    connection.query(`delete from mahasiswa where id_m = ${id}`,function (err,rows){
+    if(err){
+      return req.status(500).json({
+        status : false,
+        message : 'server error',
+      })
+    }else{
+      return res.status(200).json({
+        status : true,
+        message : 'data berhasil dihapus',
+      })
+    }
+    })
+  })
+  
+
 
 module.exports = router;
