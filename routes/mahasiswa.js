@@ -54,4 +54,31 @@ let data = {
     })
   })
 
+
+  router.get ('/(:id)', function (req, res){
+    let id = req.params.id;
+    connection.query(`select * from mahasiswa where id_m = ${id}`, function (err,rows){
+      if (err){
+        return res.status(500).json({
+          status: false,
+          message: 'server error',
+        })
+      }
+      if (rows.length <=0 ){
+        return res.status(400).json({
+          status: false,
+          message: 'not found',
+        })
+      }
+      else{
+        return res.status(200).json({
+          status: true,
+          message: 'data mahasiswa',
+          data : rows[0]
+        })
+      }
+    })
+  })
+
+
 module.exports = router;
