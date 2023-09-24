@@ -80,5 +80,35 @@ let data = {
     })
   })
 
+  router.patch('/update/:id',[
+    body('nama').notEmpty(),
+    body('nrp').notEmpty()
+  ], (req,res) => {
+    const error = validationResult(req);
+    if(!error.isEmpty()){
+      return res.status(422).json({
+        error: error.array()
+      });
+    }
+    let id = req.params.id;
+    let data = {
+      nama : req.body.nama,
+      nrp : req.body.nrp
+    }
+    connection.query(`update mahasiswa set ? where id_m = ${id}`,data,function(err,rows){
+      if(err){
+        return res.status(500).json({
+          status : false,
+          message : 'server error',
+        })
+      }else {
+        return res.status(200).json({
+          status : true,
+          message : 'update berhasil......'
+        })
+      }
+    })
+  })
+
 
 module.exports = router;
