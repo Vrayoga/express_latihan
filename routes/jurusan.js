@@ -5,7 +5,7 @@ const connection = require('../config/db');
 
 router.get('/', function (req, res) {
   connection.query(
-    'SELECT a.nama, b.nama_jurusan AS jurusan FROM mahasiswa a JOIN jurusan b ON b.id_j = a.id_jurusan ORDER BY a.id_m DESC',
+    'SELECT * from jurusan',
     function (err, rows) {
       if (err) {
         return res.status(500).json({
@@ -16,7 +16,7 @@ router.get('/', function (req, res) {
       } else {
         return res.status(200).json({
           status: true,
-          message: 'Data Mahasiswa',
+          message: 'Data jurusan ada',
           data: rows,
         });
       }
@@ -26,8 +26,8 @@ router.get('/', function (req, res) {
 
 
 router.post('/store',[
-    body('nama').notEmpty(),
-    body('nrp').notEmpty()
+    body('nama_jurusan').notEmpty()
+
   ],(req, res) => {
     const error = validationResult(req);
     if (!error.isEmpty()) {
@@ -36,11 +36,10 @@ router.post('/store',[
       });   
     }
 let data = {
-  nama : req.body.nama,
-  nrp : req.body.nrp
+  nama_jurusan : req.body.nama_jurusan
 }
 
-    connection.query('INSERT INTO mahasiswa SET ?', data, function (err, rows) {
+    connection.query('INSERT INTO jurusan SET ?', data, function (err, rows) {
       if (err) {
         return res.status(500).json({
           status: false,
@@ -59,7 +58,7 @@ let data = {
 
   router.get ('/(:id)', function (req, res){
     let id = req.params.id;
-    connection.query(`select * from mahasiswa where id_m = ${id}`, function (err,rows){
+    connection.query(`select * from jurusan where id_j = ${id}`, function (err,rows){
       if (err){
         return res.status(500).json({
           status: false,
@@ -75,7 +74,7 @@ let data = {
       else{
         return res.status(200).json({
           status: true,
-          message: 'data mahasiswa',
+          message: 'data jurusan ada',
           data : rows[0]
         })
       }
@@ -83,9 +82,7 @@ let data = {
   })
 
   router.patch('/update/:id',[
-    body('nama').notEmpty(),
-    body('nrp').notEmpty(),
-    body('id_jurusan').notEmpty()
+    body('nama_jurusan').notEmpty()
   ], (req,res) => {
     const error = validationResult(req);
     if(!error.isEmpty()){
@@ -95,11 +92,9 @@ let data = {
     }
     let id = req.params.id;
     let data = {
-      nama : req.body.nama,
-      nrp : req.body.nrp,
-      id_jurusan : req.body.id_jurusan
+      nama_jurusan : req.body.nama_jurusan
     }
-    connection.query(`update mahasiswa set ? where id_m = ${id}`,data,function(err,rows){
+    connection.query(`update jurusan set ? where id_j = ${id}`,data,function(err,rows){
       if(err){
         return res.status(500).json({
           status : false,
@@ -116,7 +111,7 @@ let data = {
 
   router.delete('/delete/(:id)', function (req, res){
     let id = req.params.id;
-    connection.query(`delete from mahasiswa where id_m = ${id}`,function (err,rows){
+    connection.query(`delete from jurusan where id_j = ${id}`,function (err,rows){
     if(err){
       return req.status(500).json({
         status : false,
