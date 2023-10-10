@@ -15,7 +15,16 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + path.extname(file.originalname));
   },
 });
-const upload = multer({ storage: storage });
+
+const fileFilter = (req, file, cb) =>{
+  if (file.mimeType === 'image/jpeg' || file.mimeType === 'image/png' ){
+    cb(null, true)
+  } else {
+    cb(new Error('jenis file tidak diizinkan'),false);
+  }
+}
+
+const upload = multer({ storage: storage, fileFilter:fileFilter });
 
 router.get("/", function (req, res) {
   connection.query(
