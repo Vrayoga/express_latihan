@@ -16,15 +16,15 @@ const storage = multer.diskStorage({
   },
 });
 
-const fileFilter = (req, file, cb) =>{
-  if (file.mimeType === 'image/jpeg' || file.mimeType === 'image/png' ){
-    cb(null, true)
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
+    cb(null, true);
   } else {
-    cb(new Error('jenis file tidak diizinkan'),false);
+    cb(new Error("jenis file tidak diizinkan"), false);
   }
-}
+};
 
-const upload = multer({ storage: storage, fileFilter:fileFilter });
+const upload = multer({ storage: storage, fileFilter: fileFilter });
 
 router.get("/", function (req, res) {
   connection.query(
@@ -49,8 +49,12 @@ router.get("/", function (req, res) {
 
 router.post(
   "/store",
-  upload.single("gambar"),
+  upload.fields([
+    { name: "gambar", maxCount: 1 },
+    { name: "swa_foto", maxCount: 1 },
+  ]),
   [
+    //validation
     body("nama").notEmpty(),
     body("nrp").notEmpty(),
     body("id_jurusan").notEmpty(),
@@ -62,23 +66,24 @@ router.post(
         error: error.array(),
       });
     }
-    let data = {
+    let Data = {
       nama: req.body.nama,
       nrp: req.body.nrp,
       id_jurusan: req.body.id_jurusan,
-      gambar: req.file.filename,
+      gambar: req.files.gambar[0].filename,
+      swa_foto: req.files.swa_foto[0].filename,
     };
-
-    connection.query("INSERT INTO mahasiswa SET ?", data, function (err, rows) {
+    connection.query("insert into mahasiswa set ?", Data, function (err, rows) {
       if (err) {
         return res.status(500).json({
           status: false,
-          message: "Server error",
+          message: "Server Error",
+          error: err,
         });
       } else {
         return res.status(201).json({
           status: true,
-          message: "Success",
+          message: "Success..!",
           data: rows[0],
         });
       }
@@ -185,7 +190,8 @@ router.patch(
 router.delete("/delete/(:id)", function (req, res) {
   let id = req.params.id;
 
-  connection.query( `select * from mahasiswa where id_m = ${id}`,
+  connection.query(
+    `select * from mahasiswa where id_m = ${id}`,
     function (err, rows) {
       if (err) {
         return res.status(500).json({
